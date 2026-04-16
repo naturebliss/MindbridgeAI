@@ -6,18 +6,22 @@ const App = {
     currentScreen: 'welcomeScreen',
 
     init() {
+        console.log('MindBridge AI initializing...');
+        
         // Initialize modules
         ProfileManager.init();
         VoiceSystem.init();
 
-        // Set up splash screen
+        // Splash screen
         this.handleSplash();
 
-        // Bind all event listeners
+        // Bind events
         this.bindEvents();
 
-        // Update profile UI
+        // Update profile
         ProfileManager.updateProfileUI();
+
+        console.log('MindBridge AI ready!');
     },
 
     handleSplash() {
@@ -25,63 +29,103 @@ const App = {
         const mainApp = document.getElementById('mainApp');
 
         setTimeout(() => {
-            splash.classList.add('fade-out');
-            mainApp.classList.remove('hidden');
+            if (splash) splash.classList.add('fade-out');
+            if (mainApp) mainApp.classList.remove('hidden');
             
             setTimeout(() => {
-                splash.style.display = 'none';
+                if (splash) splash.style.display = 'none';
             }, 800);
         }, 3000);
     },
 
     bindEvents() {
-        // Start chat button
-        document.getElementById('startChat')?.addEventListener('click', () => {
-            this.showScreen('chatScreen');
-            this.sendInitialMessage();
-        });
+        // ---- START CHAT ----
+        const startBtn = document.getElementById('startChat');
+        if (startBtn) {
+            startBtn.addEventListener('click', () => {
+                this.showScreen('chatScreen');
+                this.sendInitialMessage();
+            });
+        }
 
-        // Send message
-        document.getElementById('btnSend')?.addEventListener('click', () => this.sendUserMessage());
+        // ---- SEND MESSAGE ----
+        const sendBtn = document.getElementById('btnSend');
+        if (sendBtn) {
+            sendBtn.addEventListener('click', () => this.sendUserMessage());
+        }
 
-        // Enter key to send
-        document.getElementById('messageInput')?.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                this.sendUserMessage();
-            }
-        });
+        // ---- ENTER KEY ----
+        const input = document.getElementById('messageInput');
+        if (input) {
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    this.sendUserMessage();
+                }
+            });
 
-        // Auto-resize textarea
-        document.getElementById('messageInput')?.addEventListener('input', (e) => {
-            Utils.autoResize(e.target);
-        });
+            input.addEventListener('input', (e) => {
+                Utils.autoResize(e.target);
+            });
+        }
 
-        // Mic button (speech-to-text for chat)
-        document.getElementById('btnMic')?.addEventListener('click', () => this.toggleChatMic());
+        // ---- MIC BUTTON ----
+        const micBtn = document.getElementById('btnMic');
+        if (micBtn) {
+            micBtn.addEventListener('click', () => this.toggleChatMic());
+        }
 
-        // Attach/extras toggle
-        document.getElementById('btnAttach')?.addEventListener('click', () => {
-            document.getElementById('inputExtras')?.classList.toggle('hidden');
-        });
+        // ---- EXTRAS TOGGLE ----
+        const attachBtn = document.getElementById('btnAttach');
+        if (attachBtn) {
+            attachBtn.addEventListener('click', () => {
+                const extras = document.getElementById('inputExtras');
+                if (extras) extras.classList.toggle('hidden');
+            });
+        }
 
-        // Voice call buttons
-        document.getElementById('btnVoiceCall')?.addEventListener('click', () => VoiceSystem.startCall());
-        
-        // Call controls
-        document.getElementById('btnEndCall')?.addEventListener('click', () => VoiceSystem.endCall());
-        document.getElementById('btnMuteCall')?.addEventListener('click', () => VoiceSystem.toggleMute());
-        document.getElementById('btnSpeaker')?.addEventListener('click', () => {
-            // Speaker is always on for web - visual toggle only
-            const btn = document.getElementById('btnSpeaker');
-            btn.classList.toggle('muted');
-        });
+        // ---- VOICE CALL ----
+        const voiceCallBtn = document.getElementById('btnVoiceCall');
+        if (voiceCallBtn) {
+            voiceCallBtn.addEventListener('click', () => {
+                const extras = document.getElementById('inputExtras');
+                if (extras) extras.classList.add('hidden');
+                VoiceSystem.startCall();
+            });
+        }
 
-        // Hospital finder
-        document.getElementById('btnHospitals')?.addEventListener('click', () => this.openHospitalFinder());
-        document.getElementById('btnFindHospital')?.addEventListener('click', () => this.openHospitalFinder());
-        document.getElementById('btnBackFromHospital')?.addEventListener('click', () => this.showScreen('chatScreen'));
-        document.getElementById('btnLocateMe')?.addEventListener('click', () => this.locateAndFindHospitals());
+        // ---- CALL CONTROLS ----
+        const endCallBtn = document.getElementById('btnEndCall');
+        if (endCallBtn) endCallBtn.addEventListener('click', () => VoiceSystem.endCall());
+
+        const muteCallBtn = document.getElementById('btnMuteCall');
+        if (muteCallBtn) muteCallBtn.addEventListener('click', () => VoiceSystem.toggleMute());
+
+        const speakerBtn = document.getElementById('btnSpeaker');
+        if (speakerBtn) {
+            speakerBtn.addEventListener('click', () => {
+                speakerBtn.classList.toggle('muted');
+            });
+        }
+
+        // ---- HOSPITAL FINDER ----
+        const hospitalNavBtn = document.getElementById('btnHospitals');
+        if (hospitalNavBtn) hospitalNavBtn.addEventListener('click', () => this.openHospitalFinder());
+
+        const findHospitalBtn = document.getElementById('btnFindHospital');
+        if (findHospitalBtn) {
+            findHospitalBtn.addEventListener('click', () => {
+                const extras = document.getElementById('inputExtras');
+                if (extras) extras.classList.add('hidden');
+                this.openHospitalFinder();
+            });
+        }
+
+        const backFromHospital = document.getElementById('btnBackFromHospital');
+        if (backFromHospital) backFromHospital.addEventListener('click', () => this.showScreen('chatScreen'));
+
+        const locateBtn = document.getElementById('btnLocateMe');
+        if (locateBtn) locateBtn.addEventListener('click', () => this.locateAndFindHospitals());
 
         // Hospital filters
         document.querySelectorAll('.filter-btn').forEach(btn => {
@@ -93,75 +137,118 @@ const App = {
         });
 
         // Hospital search
-        document.getElementById('hospitalSearch')?.addEventListener('input', Utils.debounce((e) => {
-            if (e.target.value.trim()) {
-                LocationFinder.searchHospitals(e.target.value.trim());
-            } else {
-                LocationFinder.renderHospitals('all');
-            }
-        }, 300));
+        const hospitalSearch = document.getElementById('hospitalSearch');
+        if (hospitalSearch) {
+            hospitalSearch.addEventListener('input', Utils.debounce((e) => {
+                if (e.target.value.trim()) {
+                    LocationFinder.searchHospitals(e.target.value.trim());
+                } else {
+                    LocationFinder.renderHospitals('all');
+                }
+            }, 300));
+        }
 
-        // Profile
-        document.getElementById('btnProfile')?.addEventListener('click', () => {
-            document.getElementById('profilePanel')?.classList.add('open');
-        });
-        document.getElementById('btnCloseProfile')?.addEventListener('click', () => {
-            document.getElementById('profilePanel')?.classList.remove('open');
-        });
-        document.getElementById('profileOverlay')?.addEventListener('click', () => {
-            document.getElementById('profilePanel')?.classList.remove('open');
-        });
-        document.getElementById('btnClearData')?.addEventListener('click', () => {
-            if (confirm('Are you sure you want to clear all your data? This cannot be undone.')) {
-                ProfileManager.clearAll();
-                ChatEngine.clearHistory();
-                document.getElementById('chatMessages').innerHTML = '';
-                document.getElementById('profilePanel')?.classList.remove('open');
-                this.showScreen('welcomeScreen');
-            }
-        });
+        // ---- PROFILE ----
+        const profileBtn = document.getElementById('btnProfile');
+        if (profileBtn) {
+            profileBtn.addEventListener('click', () => {
+                const panel = document.getElementById('profilePanel');
+                if (panel) panel.classList.add('open');
+                ProfileManager.updateProfileUI();
+            });
+        }
 
-        // Emergency SOS
-        document.getElementById('btnEmergency')?.addEventListener('click', () => {
-            document.getElementById('crisisModal')?.classList.remove('hidden');
-        });
+        const closeProfileBtn = document.getElementById('btnCloseProfile');
+        if (closeProfileBtn) {
+            closeProfileBtn.addEventListener('click', () => {
+                const panel = document.getElementById('profilePanel');
+                if (panel) panel.classList.remove('open');
+            });
+        }
 
-        // Crisis modal buttons
-        document.getElementById('btnCrisisChat')?.addEventListener('click', () => {
-            document.getElementById('crisisModal')?.classList.add('hidden');
-        });
-        document.getElementById('btnCrisisHospital')?.addEventListener('click', () => {
-            document.getElementById('crisisModal')?.classList.add('hidden');
-            this.openHospitalFinder();
-        });
+        const profileOverlay = document.getElementById('profileOverlay');
+        if (profileOverlay) {
+            profileOverlay.addEventListener('click', () => {
+                const panel = document.getElementById('profilePanel');
+                if (panel) panel.classList.remove('open');
+            });
+        }
 
-        // Breathing exercise
-        document.getElementById('btnBreathing')?.addEventListener('click', () => {
-            document.getElementById('breathingModal')?.classList.remove('hidden');
-            document.getElementById('inputExtras')?.classList.add('hidden');
-        });
-        document.getElementById('btnCloseBreathing')?.addEventListener('click', () => {
-            document.getElementById('breathingModal')?.classList.add('hidden');
-            this.stopBreathing();
-        });
-        document.getElementById('btnStartBreathing')?.addEventListener('click', () => this.startBreathing());
+        const clearDataBtn = document.getElementById('btnClearData');
+        if (clearDataBtn) {
+            clearDataBtn.addEventListener('click', () => {
+                if (confirm('Clear all data? This cannot be undone.')) {
+                    ProfileManager.clearAll();
+                    ChatEngine.clearHistory();
+                    const msgs = document.getElementById('chatMessages');
+                    if (msgs) msgs.innerHTML = '';
+                    const panel = document.getElementById('profilePanel');
+                    if (panel) panel.classList.remove('open');
+                    this.showScreen('welcomeScreen');
+                }
+            });
+        }
 
-        // Mood buttons
+        // ---- EMERGENCY ----
+        const emergencyBtn = document.getElementById('btnEmergency');
+        if (emergencyBtn) {
+            emergencyBtn.addEventListener('click', () => {
+                const modal = document.getElementById('crisisModal');
+                if (modal) modal.classList.remove('hidden');
+            });
+        }
+
+        // Crisis modal
+        const crisisChatBtn = document.getElementById('btnCrisisChat');
+        if (crisisChatBtn) {
+            crisisChatBtn.addEventListener('click', () => {
+                const modal = document.getElementById('crisisModal');
+                if (modal) modal.classList.add('hidden');
+            });
+        }
+
+        const crisisHospitalBtn = document.getElementById('btnCrisisHospital');
+        if (crisisHospitalBtn) {
+            crisisHospitalBtn.addEventListener('click', () => {
+                const modal = document.getElementById('crisisModal');
+                if (modal) modal.classList.add('hidden');
+                this.openHospitalFinder();
+            });
+        }
+
+        // ---- BREATHING ----
+        const breathingBtn = document.getElementById('btnBreathing');
+        if (breathingBtn) {
+            breathingBtn.addEventListener('click', () => {
+                const modal = document.getElementById('breathingModal');
+                const extras = document.getElementById('inputExtras');
+                if (modal) modal.classList.remove('hidden');
+                if (extras) extras.classList.add('hidden');
+            });
+        }
+
+        const closeBreathingBtn = document.getElementById('btnCloseBreathing');
+        if (closeBreathingBtn) {
+            closeBreathingBtn.addEventListener('click', () => {
+                const modal = document.getElementById('breathingModal');
+                if (modal) modal.classList.add('hidden');
+                this.stopBreathing();
+            });
+        }
+
+        const startBreathingBtn = document.getElementById('btnStartBreathing');
+        if (startBreathingBtn) {
+            startBreathingBtn.addEventListener('click', () => this.startBreathing());
+        }
+
+        // ---- MOOD BUTTONS ----
         document.querySelectorAll('.mood-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const mood = e.target.dataset.mood;
                 ProfileManager.addMood(mood);
-                document.getElementById('moodSelector')?.classList.add('hidden');
+                const selector = document.getElementById('moodSelector');
+                if (selector) selector.classList.add('hidden');
                 
-                const moodMessages = {
-                    happy: "I'm glad to hear you're feeling good! 😊",
-                    neutral: "Thanks for checking in. I'm here if you want to talk about anything.",
-                    sad: "I'm sorry you're feeling sad. Would you like to talk about what's going on? 💙",
-                    anxious: "Anxiety can be really tough. I'm right here with you. Want to try a breathing exercise or talk it out?",
-                    angry: "It's okay to feel angry. Your emotions are valid. Want to talk about what's bothering you?",
-                    overwhelmed: "Being overwhelmed is exhausting. Let's take this one step at a time. I'm here. 💙"
-                };
-
                 this.addUserMessage(`I'm feeling ${mood}`);
                 setTimeout(() => {
                     this.sendToAI(`I'm feeling ${mood} right now`);
@@ -169,52 +256,59 @@ const App = {
             });
         });
 
-        // Journal button
-        document.getElementById('btnJournal')?.addEventListener('click', () => {
-            document.getElementById('inputExtras')?.classList.add('hidden');
-            this.addBotMessage("📝 Let's do a quick journal entry. Just write whatever comes to mind — no judgment, no structure needed. This is your safe space to let it all out. What's on your heart right now?");
-        });
+        // ---- JOURNAL ----
+        const journalBtn = document.getElementById('btnJournal');
+        if (journalBtn) {
+            journalBtn.addEventListener('click', () => {
+                const extras = document.getElementById('inputExtras');
+                if (extras) extras.classList.add('hidden');
+                this.addBotMessage("📝 Let's do a quick journal entry. Just write whatever comes to mind — no judgment, no structure needed. What's on your heart right now?");
+            });
+        }
 
-        // Close modals on overlay click
+        // ---- MODAL OVERLAYS ----
         document.querySelectorAll('.modal-overlay').forEach(overlay => {
             overlay.addEventListener('click', () => {
-                overlay.closest('.modal')?.classList.add('hidden');
+                const modal = overlay.closest('.modal');
+                if (modal) modal.classList.add('hidden');
             });
         });
 
-        // Welcome screen feature cards
+        // ---- FEATURE CARDS ----
         document.querySelectorAll('.feature-card').forEach((card, index) => {
             card.addEventListener('click', () => {
                 switch(index) {
-                    case 0: // Chat
+                    case 0:
                         this.showScreen('chatScreen');
                         this.sendInitialMessage();
                         break;
-                    case 1: // Voice Call
+                    case 1:
                         VoiceSystem.startCall();
                         break;
-                    case 2: // Find Help
+                    case 2:
                         this.openHospitalFinder();
                         break;
-                    case 3: // Crisis
-                        document.getElementById('crisisModal')?.classList.remove('hidden');
+                    case 3:
+                        const modal = document.getElementById('crisisModal');
+                        if (modal) modal.classList.remove('hidden');
                         break;
                 }
             });
         });
     },
 
-    // Screen management
+    // ---- SCREEN MANAGEMENT ----
     showScreen(screenId) {
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        document.getElementById(screenId)?.classList.add('active');
+        const screen = document.getElementById(screenId);
+        if (screen) screen.classList.add('active');
         this.currentScreen = screenId;
     },
 
-    // Send initial AI greeting
-    async sendInitialMessage() {
+    // ---- INITIAL MESSAGE ----
+    sendInitialMessage() {
         const messages = document.getElementById('chatMessages');
-        if (messages.children.length > 0) return; // Already has messages
+        if (!messages || messages.children.length > 0) return;
 
         const name = ProfileManager.profile.name;
         let greeting;
@@ -222,27 +316,31 @@ const App = {
         if (name) {
             greeting = `Hey ${name}! 💙 Welcome back. I've been thinking about you. How are you doing today?`;
         } else {
-            greeting = `Hey there! 💙 Welcome to MindBridge. I'm really glad you're here. This is a safe space — no judgment, just genuine care. How are you doing today? And hey, what should I call you?`;
+            greeting = `Hey there! 💙 Welcome to MindBridge. I'm really glad you're here. This is a safe space — no judgment, just genuine care. How are you doing today?`;
         }
 
         this.addBotMessage(greeting);
     },
 
-    // Send user message
+    // ---- SEND USER MESSAGE ----
     async sendUserMessage() {
         const input = document.getElementById('messageInput');
+        if (!input) return;
+        
         const message = input.value.trim();
         if (!message || ChatEngine.isProcessing) return;
 
         input.value = '';
         Utils.autoResize(input);
-        document.getElementById('inputExtras')?.classList.add('hidden');
+        
+        const extras = document.getElementById('inputExtras');
+        if (extras) extras.classList.add('hidden');
 
         this.addUserMessage(message);
         await this.sendToAI(message);
     },
 
-    // Send to AI and handle response
+    // ---- SEND TO AI ----
     async sendToAI(message) {
         this.showTyping(true);
 
@@ -251,26 +349,29 @@ const App = {
         this.showTyping(false);
 
         if (result) {
-            // Check for crisis
             if (result.crisis && result.crisis.shouldAlert) {
-                document.getElementById('crisisModal')?.classList.remove('hidden');
+                const modal = document.getElementById('crisisModal');
+                if (modal) modal.classList.remove('hidden');
             }
 
             this.addBotMessage(result.text);
             Utils.playSound('message');
 
-            // Show mood selector occasionally
-            if (ProfileManager.messageCount % 8 === 0 && ProfileManager.messageCount > 0) {
+            // Show mood selector every 8 messages
+            if (ProfileManager.messageCount > 0 && ProfileManager.messageCount % 8 === 0) {
                 setTimeout(() => {
-                    document.getElementById('moodSelector')?.classList.remove('hidden');
+                    const selector = document.getElementById('moodSelector');
+                    if (selector) selector.classList.remove('hidden');
                 }, 1000);
             }
         }
     },
 
-    // Add messages to chat
+    // ---- ADD MESSAGES ----
     addUserMessage(text) {
         const container = document.getElementById('chatMessages');
+        if (!container) return;
+
         const msg = document.createElement('div');
         msg.className = 'message user';
         msg.innerHTML = `
@@ -286,6 +387,8 @@ const App = {
 
     addBotMessage(text) {
         const container = document.getElementById('chatMessages');
+        if (!container) return;
+
         const msg = document.createElement('div');
         msg.className = 'message bot';
         msg.innerHTML = `
@@ -299,18 +402,21 @@ const App = {
         Utils.scrollToBottom(container.parentElement);
     },
 
-    // Typing indicator
+    // ---- TYPING INDICATOR ----
     showTyping(show) {
         const indicator = document.getElementById('typingIndicator');
+        if (!indicator) return;
+        
         if (show) {
-            indicator?.classList.remove('hidden');
-            Utils.scrollToBottom(document.querySelector('.chat-container'));
+            indicator.classList.remove('hidden');
+            const chatContainer = document.querySelector('.chat-container');
+            if (chatContainer) Utils.scrollToBottom(chatContainer);
         } else {
-            indicator?.classList.add('hidden');
+            indicator.classList.add('hidden');
         }
     },
 
-    // Chat microphone (speech to text)
+    // ---- CHAT MIC ----
     chatRecognition: null,
     isChatMicActive: false,
 
@@ -323,12 +429,13 @@ const App = {
     },
 
     startChatMic() {
-        if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-            this.addBotMessage("I'm sorry, your browser doesn't support voice input. Try using Chrome for the best experience! 💙");
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        
+        if (!SpeechRecognition) {
+            this.addBotMessage("Sorry, your browser doesn't support voice input. Please use Google Chrome for the best experience! 💙");
             return;
         }
 
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         this.chatRecognition = new SpeechRecognition();
         this.chatRecognition.continuous = false;
         this.chatRecognition.interimResults = true;
@@ -339,8 +446,8 @@ const App = {
 
         this.chatRecognition.onstart = () => {
             this.isChatMicActive = true;
-            micBtn.classList.add('listening');
-            input.placeholder = '🎤 Listening... speak now';
+            if (micBtn) micBtn.classList.add('listening');
+            if (input) input.placeholder = '🎤 Listening... speak now';
         };
 
         this.chatRecognition.onresult = (event) => {
@@ -355,47 +462,54 @@ const App = {
                 }
             }
 
-            input.value = finalTranscript || interimTranscript;
-            Utils.autoResize(input);
+            if (input) {
+                input.value = finalTranscript || interimTranscript;
+                Utils.autoResize(input);
+            }
         };
 
         this.chatRecognition.onend = () => {
             this.isChatMicActive = false;
-            micBtn.classList.remove('listening');
-            input.placeholder = 'Type your message... I\'m here to listen 💙';
+            if (micBtn) micBtn.classList.remove('listening');
+            if (input) input.placeholder = "Type your message... I'm here to listen 💙";
 
-            // Auto-send if we got a final result
-            if (input.value.trim()) {
+            if (input && input.value.trim()) {
                 this.sendUserMessage();
             }
         };
 
-        this.chatRecognition.onerror = (event) => {
+        this.chatRecognition.onerror = () => {
             this.isChatMicActive = false;
-            micBtn.classList.remove('listening');
-            input.placeholder = 'Type your message... I\'m here to listen 💙';
+            if (micBtn) micBtn.classList.remove('listening');
+            if (input) input.placeholder = "Type your message... I'm here to listen 💙";
         };
 
-        this.chatRecognition.start();
+        try {
+            this.chatRecognition.start();
+        } catch (e) {
+            console.error('Mic start error:', e);
+        }
     },
 
     stopChatMic() {
         if (this.chatRecognition) {
-            this.chatRecognition.stop();
+            try { this.chatRecognition.stop(); } catch (e) {}
         }
         this.isChatMicActive = false;
-        document.getElementById('btnMic')?.classList.remove('listening');
+        const micBtn = document.getElementById('btnMic');
+        if (micBtn) micBtn.classList.remove('listening');
     },
 
-    // Hospital finder
-    async openHospitalFinder() {
+    // ---- HOSPITAL FINDER ----
+    openHospitalFinder() {
         this.showScreen('hospitalScreen');
-        document.getElementById('inputExtras')?.classList.add('hidden');
     },
 
     async locateAndFindHospitals() {
         const btn = document.getElementById('btnLocateMe');
-        const originalText = btn.innerHTML;
+        if (!btn) return;
+
+        const originalHTML = btn.innerHTML;
         btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Locating...</span>';
         btn.disabled = true;
 
@@ -410,29 +524,30 @@ const App = {
 
             btn.innerHTML = '<i class="fas fa-check"></i> <span>Located!</span>';
             setTimeout(() => {
-                btn.innerHTML = originalText;
+                btn.innerHTML = originalHTML;
                 btn.disabled = false;
             }, 2000);
 
         } catch (error) {
             console.error('Location error:', error);
-            btn.innerHTML = originalText;
+            btn.innerHTML = originalHTML;
             btn.disabled = false;
 
             const list = document.getElementById('hospitalList');
-            list.innerHTML = `
-                <div style="text-align:center;padding:2rem;color:var(--text-muted);">
-                    <i class="fas fa-exclamation-triangle" style="font-size:2rem;color:var(--warning);margin-bottom:1rem;display:block;"></i>
-                    <p>Couldn't access your location.</p>
-                    <p style="font-size:0.85rem;margin-top:0.5rem;">Please enable location permissions in your browser and try again.</p>
-                </div>
-            `;
+            if (list) {
+                list.innerHTML = `
+                    <div style="text-align:center;padding:2rem;color:var(--text-muted);">
+                        <i class="fas fa-exclamation-triangle" style="font-size:2rem;color:var(--warning);margin-bottom:1rem;display:block;"></i>
+                        <p>Couldn't access your location.</p>
+                        <p style="font-size:0.85rem;margin-top:0.5rem;">Please enable location permissions and try again.</p>
+                    </div>
+                `;
+            }
         }
     },
 
-    // Breathing exercise
+    // ---- BREATHING EXERCISE ----
     breathingInterval: null,
-    breathingCycle: 0,
 
     startBreathing() {
         const circle = document.getElementById('breathingCircle');
@@ -440,50 +555,50 @@ const App = {
         const instruction = document.getElementById('breathingInstruction');
         const btn = document.getElementById('btnStartBreathing');
         
-        btn.style.display = 'none';
-        this.breathingCycle = 0;
+        if (btn) btn.style.display = 'none';
 
         const phases = [
-            { text: 'Breathe In', class: 'inhale', instruction: 'Breathe in slowly through your nose...', duration: 4000 },
-            { text: 'Hold', class: 'inhale', instruction: 'Hold it gently...', duration: 4000 },
-            { text: 'Breathe Out', class: 'exhale', instruction: 'Slowly release through your mouth...', duration: 6000 },
-            { text: 'Rest', class: '', instruction: 'Rest for a moment...', duration: 2000 }
+            { text: 'Breathe In', cls: 'inhale', instruction: 'Breathe in slowly through your nose...', duration: 4000 },
+            { text: 'Hold', cls: 'inhale', instruction: 'Hold it gently...', duration: 4000 },
+            { text: 'Breathe Out', cls: 'exhale', instruction: 'Slowly release through your mouth...', duration: 6000 },
+            { text: 'Rest', cls: '', instruction: 'Rest for a moment...', duration: 2000 }
         ];
 
         let phaseIndex = 0;
-        const maxCycles = 4;
+        let totalPhases = 0;
+        const maxPhases = 16; // 4 complete cycles
 
         const runPhase = () => {
-            if (this.breathingCycle >= maxCycles * phases.length) {
+            if (totalPhases >= maxPhases) {
                 this.stopBreathing();
                 return;
             }
 
             const phase = phases[phaseIndex];
-            text.textContent = phase.text;
-            instruction.textContent = phase.instruction;
-            
-            circle.className = 'breathing-circle ' + phase.class;
+            if (text) text.textContent = phase.text;
+            if (instruction) instruction.textContent = phase.instruction;
+            if (circle) circle.className = 'breathing-circle ' + phase.cls;
 
             phaseIndex = (phaseIndex + 1) % phases.length;
-            this.breathingCycle++;
+            totalPhases++;
 
             this.breathingInterval = setTimeout(runPhase, phase.duration);
         };
 
-        instruction.textContent = 'Let\'s begin. Get comfortable...';
+        if (instruction) instruction.textContent = 'Get comfortable... we begin in a moment.';
         setTimeout(runPhase, 2000);
     },
 
     stopBreathing() {
-        clearTimeout(this.breathingInterval);
+        if (this.breathingInterval) clearTimeout(this.breathingInterval);
+        
         const text = document.getElementById('breathText');
         const instruction = document.getElementById('breathingInstruction');
         const btn = document.getElementById('btnStartBreathing');
         const circle = document.getElementById('breathingCircle');
 
         if (text) text.textContent = '✨';
-        if (instruction) instruction.textContent = 'Great job! Take a moment to notice how you feel.';
+        if (instruction) instruction.textContent = 'Great job! Notice how you feel right now.';
         if (circle) circle.className = 'breathing-circle';
         if (btn) {
             btn.style.display = '';
@@ -493,7 +608,7 @@ const App = {
 };
 
 // ============================================
-// INITIALIZE APP
+// START THE APP
 // ============================================
 document.addEventListener('DOMContentLoaded', () => {
     App.init();
