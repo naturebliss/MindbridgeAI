@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MindBridge AI — Your Mental Health Companion</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <!-- SPLASH SCREEN -->
+    <div id="splashScreen" class="splash-screen">
+        <div class="splash-content">
+            <div class="splash-logo">
+                <div class="logo-brain">
+                    <i class="fas fa-brain"></i>
+                    <div class="pulse-ring"></div>
+                    <div class="pulse-ring delay-1"></div>
+                    <div class="pulse-ring delay-2"></div>
+                </div>
+            </div>
+            <h1 class="splash-title">MindBridge AI</h1>
+            <p class="splash-tagline">Your safe space. Your companion. Always here.</p>
+            <div class="splash-loader">
+                <div class="loader-bar"></div>
+            </div>
+            <p class="splash-status">Initializing your safe space...</p>
+        </div>
+    </div>
+
+    <!-- MAIN APP -->
+    <div id="mainApp" class="main-app hidden">
+        <!-- NAVIGATION -->
+        <nav class="top-nav">
+            <div class="nav-left">
+                <div class="nav-logo">
+                    <i class="fas fa-brain"></i>
+                    <span>MindBridge</span>
+                </div>
+            </div>
+            <div class="nav-center">
+                <div class="connection-status">
+                    <span class="status-dot online"></span>
+                    <span class="status-text">AI Companion Online</span>
+                </div>
+            </div>
+            <div class="nav-right">
+                <button class="nav-btn" id="btnProfile" title="Your Profile">
+                    <i class="fas fa-user-circle"></i>
+                </button>
+                <button class="nav-btn" id="btnHospitals" title="Nearby Help">
+                    <i class="fas fa-hospital"></i>
+                </button>
+                <button class="nav-btn emergency-btn" id="btnEmergency" title="Emergency SOS">
+                    <i class="fas fa-phone-alt"></i>
+                    <span class="emergency-label">SOS</span>
+                </button>
+            </div>
+        </nav>
+
+        <!-- MAIN CONTENT AREA -->
+        <div class="app-content">
+            <!-- WELCOME SCREEN -->
+            <div id="welcomeScreen" class="screen welcome-screen active">
+                <div class="welcome-container">
+                    <div class="welcome-hero">
+                        <div class="hero-illustration">
+                            <div class="floating-elements">
+                                <div class="float-element heart"><i class="fas fa-heart"></i></div>
+                                <div class="float-element shield"><i class="fas fa-shield-alt"></i></div>
+                                <div class="float-element star"><i class="fas fa-star"></i></div>
+                                <div class="float-element hand"><i class="fas fa-hand-holding-heart"></i></div>
+                            </div>
+                            <div class="hero-brain">
+                                <i class="fas fa-brain"></i>
+                            </div>
+                        </div>
+                        <h1>Welcome to MindBridge AI</h1>
+                        <p class="hero-subtitle">A safe, judgment-free space where AI meets empathy. Whether you need someone to talk to, are going through a tough time, or just want to check in with yourself — I'm here.</p>
+                    </div>
+                    <div class="feature-cards">
+                        <div class="feature-card">
+                            <div class="feature-icon chat-icon">
+                                <i class="fas fa-comments"></i>
+                            </div>
+                            <h3>Talk to Me</h3>
+                            <p>Chat naturally about anything on your mind. I listen without judgment.</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon call-icon">
+                                <i class="fas fa-phone-alt"></i>
+                            </div>
+                            <h3>Voice Call</h3>
+                            <p>Call me like a friend. Hear a warm voice that understands you.</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon location-icon">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </div>
+                            <h3>Find Help Nearby</h3>
+                            <p>Locate hospitals, therapists, and crisis centers near you instantly.</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon crisis-icon">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <h3>Crisis Support</h3>
+                            <p>Immediate detection and connection to emergency resources.</p>
+                        </div>
+                    </div>
+                    <button class="cta-button" id="startChat">
+                        <span>Start Talking</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                    <p class="privacy-note"><i class="fas fa-lock"></i> Your conversations are private and never stored permanently.</p>
+                </div>
+            </div>
+
+            <!-- CHAT SCREEN -->
+            <div id="chatScreen" class="screen chat-screen">
+                <div class="chat-container">
+                    <div class="chat-messages" id="chatMessages">
+                        <!-- Messages will be injected here -->
+                    </div>
+                    <div class="typing-indicator hidden" id="typingIndicator">
+                        <div class="typing-avatar">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <div class="typing-dots">
+                            <span></span><span></span><span></span>
+                        </div>
+                        <span class="typing-text">MindBridge is thinking...</span>
+                    </div>
+                </div>
+                <div class="chat-input-area">
+                    <div class="mood-quick-select hidden" id="moodSelector">
+                        <span class="mood-label">How are you feeling?</span>
+                        <div class="mood-options">
+                            <button class="mood-btn" data-mood="happy">😊 Good</button>
+                            <button class="mood-btn" data-mood="neutral">😐 Okay</button>
+                            <button class="mood-btn" data-mood="sad">😢 Sad</button>
+                            <button class="mood-btn" data-mood="anxious">😰 Anxious</button>
+                            <button class="mood-btn" data-mood="angry">😠 Angry</button>
+                            <button class="mood-btn" data-mood="overwhelmed">😩 Overwhelmed</button>
+                        </div>
+                    </div>
+                    <div class="input-container">
+                        <button class="input-action-btn" id="btnAttach" title="Quick actions">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                        <div class="input-wrapper">
+                            <textarea id="messageInput" placeholder="Type your message... I'm here to listen 💙" rows="1"></textarea>
+                        </div>
+                        <button class="input-action-btn mic-btn" id="btnMic" title="Voice message">
+                            <i class="fas fa-microphone"></i>
+                        </button>
+                        <button class="send-btn" id="btnSend" title="Send message">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                    <div class="input-extras hidden" id="inputExtras">
+                        <button class="extra-btn" id="btnVoiceCall">
+                            <i class="fas fa-phone-alt"></i>
+                            <span>Voice Call</span>
+                        </button>
+                        <button class="extra-btn" id="btnFindHospital">
+                            <i class="fas fa-hospital"></i>
+                            <span>Find Help</span>
+                        </button>
+                        <button class="extra-btn" id="btnBreathing">
+                            <i class="fas fa-wind"></i>
+                            <span>Breathing</span>
+                        </button>
+                        <button class="extra-btn" id="btnJournal">
+                            <i class="fas fa-book"></i>
+                            <span>Journal</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VOICE CALL SCREEN -->
+            <div id="callScreen" class="screen call-screen">
+                <div class="call-container">
+                    <div class="call-background">
+                        <div class="call-wave wave-1"></div>
+                        <div class="call-wave wave-2"></div>
+                        <div class="call-wave wave-3"></div>
+                    </div>
+                    <div class="call-content">
+                        <div class="caller-avatar">
+                            <div class="avatar-ring active-call">
+                                <i class="fas fa-brain"></i>
+                            </div>
+                        </div>
+                        <h2 class="caller-name">MindBridge AI</h2>
+                        <p class="call-status" id="callStatus">Connecting...</p>
+                        <div class="call-timer hidden" id="callTimer">00:00</div>
+                        <div class="call-visualizer" id="callVisualizer">
+                            <div class="viz-bar"></div>
+                            <div class="viz-bar"></div>
+                            <div class="viz-bar"></div>
+                            <div class="viz-bar"></div>
+                            <div class="viz-bar"></div>
+                            <div class="viz-bar"></div>
+                            <div class="viz-bar"></div>
+                            <div class="viz-bar"></div>
+                            <div class="viz-bar"></div>
+                        </div>
+                        <div class="call-controls">
+                            <button class="call-control-btn" id="btnMuteCall">
+                                <i class="fas fa-microphone"></i>
+                                <span>Mute</span>
+                            </button>
+                            <button class="call-control-btn" id="btnSpeaker">
+                                <i class="fas fa-volume-up"></i>
+                                <span>Speaker</span>
+                            </button>
+                            <button class="call-control-btn end-call" id="btnEndCall">
+                                <i class="fas fa-phone-slash"></i>
+                                <span>End</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- HOSPITAL FINDER SCREEN -->
+            <div id="hospitalScreen" class="screen hospital-screen">
+                <div class="hospital-container">
+                    <div class="hospital-header">
+                        <button class="back-btn" id="btnBackFromHospital">
+                            <i class="fas fa-arrow-left"></i>
+                        </button>
+                        <h2><i class="fas fa-hospital"></i> Nearby Mental Health Resources</h2>
+                    </div>
+                    <div class="hospital-search">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="hospitalSearch" placeholder="Search hospitals, therapists...">
+                        </div>
+                        <button class="locate-btn" id="btnLocateMe">
+                            <i class="fas fa-crosshairs"></i>
+                            <span>Locate Me</span>
+                        </button>
+                    </div>
+                    <div class="hospital-filters">
+                        <button class="filter-btn active" data-filter="all">All</button>
+                        <button class="filter-btn" data-filter="hospital">Hospitals</button>
+                        <button class="filter-btn" data-filter="therapist">Therapists</button>
+                        <button class="filter-btn" data-filter="crisis">Crisis Centers</button>
+                    </div>
+                    <div id="hospitalMap" class="hospital-map">
+                        <div class="map-placeholder">
+                            <i class="fas fa-map-marked-alt"></i>
+                            <p>Click "Locate Me" to find nearby resources</p>
+                        </div>
+                    </div>
+                    <div class="hospital-list" id="hospitalList">
+                        <!-- Hospital cards injected here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- PROFILE PANEL -->
+            <div id="profilePanel" class="profile-panel">
+                <div class="profile-overlay" id="profileOverlay"></div>
+                <div class="profile-content">
+                    <div class="profile-header">
+                        <h2><i class="fas fa-user-circle"></i> Your Profile</h2>
+                        <button class="close-btn" id="btnCloseProfile">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="profile-body">
+                        <div class="profile-avatar-section">
+                            <div class="profile-avatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <p class="profile-greeting" id="profileGreeting">Hello there!</p>
+                        </div>
+                        <div class="profile-info" id="profileInfo">
+                            <div class="info-item">
+                                <label>Name</label>
+                                <span id="profileName">Not shared yet</span>
+                            </div>
+                            <div class="info-item">
+                                <label>Age</label>
+                                <span id="profileAge">Not shared yet</span>
+                            </div>
+                            <div class="info-item">
+                                <label>Gender</label>
+                                <span id="profileGender">Not shared yet</span>
+                            </div>
+                            <div class="info-item">
+                                <label>Living Situation</label>
+                                <span id="profileLiving">Not shared yet</span>
+                            </div>
+                            <div class="info-item">
+                                <label>Location</label>
+                                <span id="profileLocation">Not shared yet</span>
+                            </div>
+                        </div>
+                        <div class="mood-history">
+                            <h3><i class="fas fa-chart-line"></i> Mood Journey</h3>
+                            <div class="mood-chart" id="moodChart">
+                                <p class="no-data">Start chatting to track your mood journey</p>
+                            </div>
+                        </div>
+                        <button class="danger-btn" id="btnClearData">
+                            <i class="fas fa-trash-alt"></i> Clear All Data
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BREATHING EXERCISE MODAL -->
+            <div id="breathingModal" class="modal breathing-modal hidden">
+                <div class="modal-overlay"></div>
+                <div class="modal-content breathing-content">
+                    <button class="close-btn modal-close" id="btnCloseBreathing">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    <h2>Guided Breathing</h2>
+                    <p class="breathing-instruction" id="breathingInstruction">Get comfortable...</p>
+                    <div class="breathing-circle" id="breathingCircle">
+                        <div class="breath-inner">
+                            <span id="breathText">Start</span>
+                        </div>
+                    </div>
+                    <button class="cta-button small" id="btnStartBreathing">Begin Exercise</button>
+                </div>
+            </div>
+
+            <!-- CRISIS ALERT MODAL -->
+            <div id="crisisModal" class="modal crisis-modal hidden">
+                <div class="modal-overlay"></div>
+                <div class="modal-content crisis-content">
+                    <div class="crisis-icon">
+                        <i class="fas fa-hand-holding-heart"></i>
+                    </div>
+                    <h2>I'm Here For You</h2>
+                    <p>I notice you might be going through something really difficult right now. You don't have to face this alone.</p>
+                    <div class="crisis-actions">
+                        <a href="tel:988" class="crisis-btn primary">
+                            <i class="fas fa-phone-alt"></i>
+                            <span>Call 988 Suicide & Crisis Lifeline</span>
+                        </a>
+                        <a href="sms:741741&body=HELLO" class="crisis-btn secondary">
+                            <i class="fas fa-sms"></i>
+                            <span>Text HOME to 741741</span>
+                        </a>
+                        <button class="crisis-btn tertiary" id="btnCrisisChat">
+                            <i class="fas fa-comments"></i>
+                            <span>Continue talking with me</span>
+                        </button>
+                        <button class="crisis-btn tertiary" id="btnCrisisHospital">
+                            <i class="fas fa-hospital"></i>
+                            <span>Find nearest hospital</span>
+                        </button>
+                    </div>
+                    <p class="crisis-note">If you're in immediate danger, please call emergency services (911) right away.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="js/utils.js"></script>
+    <script src="js/crisis.js"></script>
+    <script src="js/profile.js"></script>
+    <script src="js/chat.js"></script>
+    <script src="js/voice.js"></script>
+    <script src="js/location.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
